@@ -1,3 +1,6 @@
+// Table is the object that keeps track of its rows and columns as individual
+// Line objects. It also creates the textual and graphical input. 
+
 #ifndef SOLVER_TABLE_H_
 #define SOLVER_TABLE_H_
 
@@ -9,7 +12,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-// C type structures
+// Small helper structures for PNG data 
 
 typedef struct {
     uint8_t red;
@@ -24,6 +27,13 @@ typedef struct  {
     size_t height;
 } bitmap_t;
 
+
+// CompareLines is a binary predicate aiding the use of the std::priority queue
+// Compares two lines according to their heuristic score, which is a positive value
+// when its possible to deduce new cells from existing one, i.e. the line is
+// dense in some sense, and tries to measure how dense. The score is negative
+// when the line is  sparse instead, and the less the score is the less hope 
+// it is for an exhaustive search to succeed on the line in reasonable time. 
 class CompareLines
 {
 public:
@@ -48,9 +58,15 @@ public:
   }
 private:
 };
-
+// Used as the type for the main line heap, which keeps line in order according
+// to the score of 'density', described above.
 typedef std::priority_queue<Line*, std::vector<Line*>, CompareLines> LineHeap;
 
+
+// Table is the class that manages rows and columns, and it also contains the main heap
+// where lines are retrived from during the main loop of the calculation.
+// Table is initialized with the textfile itself, it read in the data when possible.
+// Creates the textual and graphical png output when the puzzle is solved.  
 class Table {
 public:
   Table(int h, int w) : height_(h),
@@ -74,7 +90,7 @@ public:
   };
 		
   int NumberOfCells() { return width_ * height_;}
-  // Heap related
+  // Puts all rows and columns back to the heap.
   void PutEverythingOnHeap();
   // Accessors
   LineHeap & get_heap( ) { return heap_;}
@@ -86,6 +102,9 @@ private:
   std::vector<Line*> rows_;
   std::vector<Line*> cols_;  
 	std::string raw_filename_;
+  // Main line heap. This is where all the lines are kept and ordered
+  // during computation. Top always refers to the highest density line as
+  // described above.
   LineHeap heap_;
 };
 

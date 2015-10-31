@@ -7,19 +7,25 @@
 #include <algorithm>
 
 Solver::Solver (std::string filename) {
+  // Initialize the table, read the data from the textfile
   bool init_ok = table_.Init(filename);
   if (init_ok) {
     SolverSpeed current_algo;
     for ( int i = 0; i < 3; i++) {
+      // Try the 3 algorithms in consecutive passes in  order of complexity 
+      // so easier parts of the puzzle get deduced by Fast
       current_algo = kRank[i];
       int remaining = RunLogicTilPossible(current_algo);
       if ( remaining == 0 ) {
+        // Break out if a solution was already found
         break;
       }
     }
-    
+    // Print the solution to the console
     table_.PrintTable();
+    // Print the solution to the file
     table_.PrintTableToFile();
+    // Write the png
     table_.WriteToPng();
   }
   else {
@@ -29,9 +35,11 @@ Solver::Solver (std::string filename) {
 int Solver::RunLogicTilPossible(SolverSpeed algorithm) {
   int count = 0;
   int remaining = table_.NumberOfCells();
+  // We Loop until some cells can be determined by the linesolver logic passes
   do {
     count = Loop(algorithm);
     remaining -= count;
+    // Everything gets put back 
     table_.PutEverythingOnHeap();
   } while (count > 0);
   return remaining;
@@ -43,6 +51,7 @@ int Solver::Loop (SolverSpeed algorithm) {
   int count = 0;
   LineHeap & heap = table_.get_heap();
   while (!heap.empty()) {
+    // Pop a line off the heap and try to solve it, until the heap is empty
     Line* current_line = heap.top();
     current_line->workline();
     count += SolveAndUpdate(current_line, algorithm);
@@ -56,8 +65,10 @@ int Solver::SolveAndUpdate (Line* workline, SolverSpeed algorithm) {
   LineSolverDynamic dynamic_solver;
   LineSolver  normal_solver;
   LineHeap & heap = table_.get_heap();
-  // Vector to put the results in
+  // Create a veector to put the results in
   std::vector<int>* res = new std::vector<int>;
+  
+  // Choose the right algorithm object
   switch( algorithm ) {
   case kFast:
     fast_solver.Solve(workline, res);
@@ -71,12 +82,14 @@ int Solver::SolveAndUpdate (Line* workline, SolverSpeed algorithm) {
   }
   std::vector<int>& result = *res;
   LineState & new_state = workline->get_state();
+  // Loop through the resulting indices and put those
+  // perpendicular lines back to the heap affected by the changes
   for (int i = 0; i < result.size(); i++ ) {
     switch(workline->get_type()) {
     case kColumn:
       {
         Line* row_to_write = table_.get_row(result[i]);
-        
+        // Put it back to the heap 
         heap.push(row_to_write);
         switch (new_state[result[i]]){
         case kBlack:
@@ -95,7 +108,7 @@ int Solver::SolveAndUpdate (Line* workline, SolverSpeed algorithm) {
     case kRow:
       {
         Line* col_to_write = table_.get_col(result[i]);
-        
+        // Put it back to the heap 
         heap.push(col_to_write);
         switch (new_state[result[i]]){
         case kBlack:

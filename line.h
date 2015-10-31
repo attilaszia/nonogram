@@ -1,6 +1,12 @@
+// Defines the Line class, used for line manipulation
+
 #ifndef SOLVER_LINE_H_
 #define SOLVER_LINE_H_
 
+// Line is used for puzzle line manipulation. It stores the clues, the state
+// of each cell and provides common funtionality.  It is either used as a 
+// "workline", that is a partially solved row or column, or it is a "scanline". 
+//  A temporary instance used by the algorithm during computation.
 class Line {
 public:
   Line(); 
@@ -25,17 +31,20 @@ public:
   void Clear(int index) { set_cell_at(kUnknown, index); };
   
   int FirstPos ( );
+  // Not used, a different line selection strategy
+  // could use these
   void ResetSolver ( ) {solver_ = kFast;};
   void FastSolveDone ( ) {solver_ = kDynamic;};
   void DynamicSolveDone () { solver_ = kNormal;};
   // Heuristic
   int Score ( );
-  // Inverts the line
+  // Inverts the line and the clues 
   void InvertWithClues ();
   
   // Basic block manipulations 
   bool MoveBlock(int block_index, int where);
-  bool MoveBlockByOne(int block_index) { MoveBlock(block_index, block_positions_[block_index] + 1 ); }
+  bool MoveBlockByOne(int block_index) { MoveBlock(block_index, block_positions_[block_index] + 1 );
+                                         return true;  }
   bool ClearBlock(int block_index);
   
   // Accessors, setters, utilities 
@@ -58,16 +67,22 @@ public:
 private:
   bool workline_;
   int len_;
+  // Used for scanlines, true if the ith block has been 
+  // given a fixed place
   std::vector<bool> block_positioned_;
+  // The clues for solid blocks
   std::vector<int> clues_;  
   std::vector<CellState> state_;
+  // Blocks are the solid blocks described by clues, this vector keeps
+  // track of their positions for scanlines 
   std::vector<int> block_positions_; 
+  // Row or column if workline 
   Orientation type_;
-  // Which row 
+  // Which row , only makes sense for worklines
   int i_;
   // Which column
   int j_;
-  // Which solver
+  // Which solver to use next, not used eventually 
   SolverSpeed solver_;
   
   

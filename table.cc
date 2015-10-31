@@ -1,7 +1,7 @@
 #include "common.h"
 #include "table.h"
 
-
+// Put everything back to the heap 
 void Table::PutEverythingOnHeap() {
   for (int i = 0; i < rows_.size(); i++) {
     heap_.push(rows_[i]);
@@ -11,12 +11,14 @@ void Table::PutEverythingOnHeap() {
   }  
 }
 
+// Displays the column clues - unused
 void Table::PrintCols() {
   for(std::vector<Line*>::iterator it = cols_.begin(); it != cols_.end(); ++it){
     (*it)->DisplayClues();
   }
 }
 
+// Displays the row clues - unused
 void Table::PrintRows() {
   for(std::vector<Line*>::iterator it = rows_.begin(); it != rows_.end(); ++it){
     (*it)->DisplayClues();
@@ -83,9 +85,6 @@ bool Table::SavePngToFile (bitmap_t *bitmap, const char *path) {
   png_byte ** row_pointers = NULL;
   
   bool status = false;
-  /* The following number is set by trial and error only. I cannot
-      see where it it is documented in the libpng manual.
-    */
   int pixel_size = 3;
   int depth = 8;
   
@@ -124,9 +123,9 @@ bool Table::SavePngToFile (bitmap_t *bitmap, const char *path) {
   
   // Initialize rows of PNG. 
 
-  row_pointers = png_malloc (png_ptr, bitmap->height * sizeof (png_byte *));
+  row_pointers = (png_byte**) png_malloc (png_ptr, bitmap->height * sizeof (png_byte *));
   for (y = 0; y < bitmap->height; ++y) {
-    png_byte *row = 
+    png_byte *row = (png_byte*)
     png_malloc (png_ptr, sizeof (uint8_t) * bitmap->width * pixel_size);
     row_pointers[y] = row;
     for (x = 0; x < bitmap->width; ++x) {
@@ -157,11 +156,13 @@ bool Table::SavePngToFile (bitmap_t *bitmap, const char *path) {
 }
 
 void Table::WriteToPng() {
+  // Image buffer where we create the puzzle image 
   bitmap_t image;
   image.width = width_;
   image.height = height_;
   // We're doing C 
-  image.pixels = calloc (sizeof (pixel_t), image.width * image.height);
+  // Allocate some space for the image buffer
+  image.pixels = (pixel_t*) calloc (sizeof (pixel_t), image.width * image.height);
   for (int y = 0; y < image.height; y++) {
     for (int x = 0; x < image.width; x++) {
       LineState& current_line = rows_[y]->get_state();
@@ -188,6 +189,7 @@ void Table::WriteToPng() {
   }
   std::string filename = raw_filename_;
   filename += ".png";
+  // Write the buffer into the file 
   SavePngToFile (& image, filename.c_str());
 }
 

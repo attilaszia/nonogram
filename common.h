@@ -1,3 +1,6 @@
+// Various enums and constants used by classes
+// and inclusion of common headers
+
 #ifndef SOLVER_COMMON_H_
 #define SOLVER_COMMON_H_
 
@@ -12,6 +15,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+
 
 enum CellState{
   kUnknown,

@@ -1,8 +1,10 @@
 #include "common.h"
 #include "line.h"
 
+// Move the indexed block to the position 
 bool Line::MoveBlock(int block_index, int where) {
   bool result = false;
+  // Makes sense for scanlines only 
   if (!workline_) {
     if ( clues_[block_index] + where <= len_) {
       if (block_positioned_[block_index]){
@@ -21,6 +23,7 @@ bool Line::MoveBlock(int block_index, int where) {
   return result;
 }
 
+// Heuristic value trying to describe line density
 int Line::Score ( ) {
   int sum = std::accumulate(clues_.begin(), clues_.end(), 0);
   int size = clues_.size();
@@ -28,6 +31,7 @@ int Line::Score ( ) {
   return score;
 }
 
+// Clear the given block off the scanline 
 bool Line::ClearBlock(int block_index) {
   for(int i = 0; i < clues_[block_index]; i++) {
     Clear(block_positions_[block_index]+i);
@@ -36,6 +40,8 @@ bool Line::ClearBlock(int block_index) {
   return true;
 }
 
+// First avaiable position, after the last positioned solid block
+// the the one necessary white cell 
 int Line::FirstPos() {
   int result = 0;
   int last_position = clues_.size() - 1;
@@ -73,7 +79,7 @@ void Line::InvertWithClues() {
   std::reverse(state_.begin(), state_.end());
   std::reverse(clues_.begin(), clues_.end());
 }
-
+// Text representation for the line - debugging purposes 
 void Line::DisplayState (){
   for (int i = 0; i < len_ ; i++) {
     switch (state_[i]) {

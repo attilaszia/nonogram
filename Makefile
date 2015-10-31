@@ -1,28 +1,33 @@
+# Use g++ or clang++
+# GCC seems to be faster for some reason by some small constant factor.
+
+CC=g++
+
 all: main
 
 main: solver.o table.o line.o deduction.o line-solver.o line-solver-dynamic.o line-solver-fast.o
-	g++ solver.o table.o line.o deduction.o line-solver.o line-solver-dynamic.o line-solver-fast.o `libpng-config --ldflags --libs` -o solver 
+	$(CC) solver.o table.o line.o deduction.o line-solver.o line-solver-dynamic.o line-solver-fast.o `libpng-config --ldflags --libs` -o solver
 
 solver.o: solver.cc
-	g++ -c solver.cc
+	$(CC) -c solver.cc
   
 table.o: table.cc
-	g++ -c -w -fpermissive `libpng-config --ldflags --libs` table.cc
+	$(CC) -c -w -fpermissive `libpng-config --ldflags --libs` table.cc
   
 line.o: line.cc
-	g++ -c line.cc
+	$(CC) -c line.cc
   
 deduction.o: deduction.cc
-	g++ -c deduction.cc
+	$(CC) -c deduction.cc
   
 line-solver.o: line-solver.cc
-	g++ -c line-solver.cc
+	$(CC) -c line-solver.cc
   
 line-solver-dynamic.o: line-solver-dynamic.cc
-	g++ -c line-solver-dynamic.cc
+	$(CC) -c line-solver-dynamic.cc
   
 line-solver-fast.o: line-solver-fast.cc
-	g++ -c line-solver-fast.cc
+	$(CC) -c line-solver-fast.cc
 	
 clean:
 	rm *o solver
