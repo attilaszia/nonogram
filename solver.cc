@@ -21,10 +21,10 @@ Solver::Solver (std::string filename) {
     table_.PrintTable();
     table_.PrintTableToFile();
     table_.WriteToPng();
-	}
-	else {
-		std::cout << "Unable to initialize table.\n";
-	}
+  }
+  else {
+    std::cout << "Unable to initialize table.\n";
+  }
 }
 int Solver::RunLogicTilPossible(SolverSpeed algorithm) {
   int count = 0;
