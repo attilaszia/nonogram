@@ -1,5 +1,5 @@
 # Use g++ or clang++
-# GCC seems to be faster for some reason by some small constant factor.
+# GCC seems to generate a faster solver by a small constant factor.
 
 CC=g++
 
