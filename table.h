@@ -4,6 +4,26 @@
 #include "common.h"
 #include "line.h"
 
+#include <png.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+// C type structures
+
+typedef struct {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+} pixel_t;
+
+    
+typedef struct  {
+    pixel_t *pixels;
+    size_t width;
+    size_t height;
+} bitmap_t;
+
 class CompareLines
 {
 public:
@@ -36,13 +56,23 @@ public:
   Table(int h, int w) : height_(h),
   width_(w) { };
   Table() {} ;
-  // Initialize the table from filename 
-  void Init(std::string filename);
+  // Initialize the table with filename 
+  bool Init(std::string filename);
   // Basic output 
   void PrintCols();
   void PrintRows();
   void PrintTable();
-  //  
+	// Text output 
+	void PrintTableToFile();
+	
+	//Graphical output 
+	void WriteToPng();
+  bool SavePngToFile (bitmap_t *bitmap, const char *path);	
+  // Little inline for png   
+	pixel_t * pixel_at (bitmap_t * bitmap, int x, int y) {
+    return bitmap->pixels + bitmap->width * y + x;
+  };
+		
   int NumberOfCells() { return width_ * height_;}
   // Heap related
   void PutEverythingOnHeap();
@@ -55,6 +85,7 @@ private:
   int width_;  
   std::vector<Line*> rows_;
   std::vector<Line*> cols_;  
+	std::string raw_filename_;
   LineHeap heap_;
 };
 

@@ -7,18 +7,24 @@
 #include <algorithm>
 
 Solver::Solver (std::string filename) {
-  table_.Init(filename);
-
-  SolverSpeed current_algo;
-  for ( int i = 0; i < 3; i++) {
-    current_algo = kRank[i];
-    int remaining = RunLogicTilPossible(current_algo);
-    if ( remaining == 0 ) {
-      break;
+  bool init_ok = table_.Init(filename);
+  if (init_ok) {
+    SolverSpeed current_algo;
+    for ( int i = 0; i < 3; i++) {
+      current_algo = kRank[i];
+      int remaining = RunLogicTilPossible(current_algo);
+      if ( remaining == 0 ) {
+        break;
+      }
     }
-  }
-
-  table_.PrintTable();
+    
+    table_.PrintTable();
+    table_.PrintTableToFile();
+    table_.WriteToPng();
+	}
+	else {
+		std::cout << "Unable to initialize table.\n";
+	}
 }
 int Solver::RunLogicTilPossible(SolverSpeed algorithm) {
   int count = 0;
