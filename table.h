@@ -72,6 +72,7 @@ public:
   Table(int h, int w) : height_(h),
   width_(w) { };
   Table() {} ;
+  ~Table();
   // Initialize the table with filename 
   bool Init(std::string filename);
   // Basic output 

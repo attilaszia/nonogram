@@ -253,3 +253,14 @@ bool Table::Init(std::string filename){
   }
 
 }
+
+Table::~Table() {
+  // Freeing memory 
+  for( int i = 0; i < rows_.size() ; i++ ) {
+    delete rows_[i];
+  }
+  for( int i = 0; i < cols_.size() ; i++ ) {
+    delete cols_[i];
+  }
+
+}
