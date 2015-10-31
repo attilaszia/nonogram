@@ -163,29 +163,29 @@ void Table::WriteToPng() {
 	// We're doing C 
 	image.pixels = calloc (sizeof (pixel_t), image.width * image.height);
 	for (int y = 0; y < image.height; y++) {
-    for (int x = 0; x < image.width; x++) {
+		for (int x = 0; x < image.width; x++) {
 			LineState& current_line = rows_[y]->get_state();
-      pixel_t * pixel = pixel_at (& image, x, y);
-		  switch (current_line[x]) {
-        case kBlack:
-          pixel->red = 0;
-					pixel->green = 0;
-					pixel->blue = 0;
-          break;
-        case kWhite:
-          pixel->red = 255;
-					pixel->green = 255;
-					pixel->blue = 255;
-          break;
-        case kUnknown:
-          pixel->red = 255;
-					pixel->green = 0;
-					pixel->blue = 0;          
-          break;
+			pixel_t * pixel = pixel_at (& image, x, y);
+			switch (current_line[x]) {
+			case kBlack:
+				pixel->red = 0;
+				pixel->green = 0;
+				pixel->blue = 0;
+				break;
+			case kWhite:
+				pixel->red = 255;
+				pixel->green = 255;
+				pixel->blue = 255;
+				break;
+			case kUnknown:
+				pixel->red = 255;
+				pixel->green = 0;
+				pixel->blue = 0;          
+				break;
 			}
-     
-   }
-  }
+			
+		}
+	}
 	std::string filename = raw_filename_;
 	filename += ".png";
 	SavePngToFile (& image, filename.c_str());
