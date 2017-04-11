@@ -2,12 +2,15 @@
 #include "line-solver.h"
 
 bool LineSolverDynamic::Solve(Line* line, std::vector<int>* result_indices){
+#pragma omp parallel
+{
   Prepare(line);
   // Create a new deduction object to use 
   deduction_ = new DeductionDynamic(&line->get_state());
   // Invoke the dynamic programming algorithm 
   bool possible = DynamicSearch(line, line->get_len(), minlen_clue_.size()-1); 
   // Get the solved cells' indices 
+}
   deduction_->SolutionIndices(result_indices);
   // Write the result into the line 
   std::vector<int> & indices = *result_indices;
