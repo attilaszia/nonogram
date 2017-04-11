@@ -1,3 +1,4 @@
+#include <cassert>
 #include "common.h"
 #include "table.h"
 
@@ -199,6 +200,7 @@ bool Table::Init(std::string filename){
   std::ifstream f;
   std::string line;
   f.open(filename.c_str());
+  assert(f.is_open());
   
   int lastindex = filename.find_last_of("."); 
   raw_filename_ = filename.substr(0, lastindex); 
@@ -210,6 +212,9 @@ bool Table::Init(std::string filename){
       // Setup width, and height 
       linestream >> width_;
       linestream >> height_;
+
+      assert(height_ > 0);
+      assert(height_ < 1'000'000'000);
     }
     // Setup cols 
     for (int i=0; i<width_; i++){
@@ -219,7 +224,10 @@ bool Table::Init(std::string filename){
       int value;
       while ( linestream >> value ) {
         linedata.push_back(value);
+        assert(linedata.size() < 1'000'000);
       }
+      assert(height_ > 0);
+      assert(height_ < 1'000'000'000);
       Line* current_col = new Line(linedata, height_);
       current_col->set_type(kColumn);
       current_col->j(i);
@@ -235,6 +243,8 @@ bool Table::Init(std::string filename){
       while ( linestream >> value ) {
         linedata.push_back(value);
       }
+      assert(width_ > 0);
+      assert(width_ < 1'000'000'000);
       Line* current_row = new Line(linedata, width_);
       current_row->set_type(kRow);
       current_row->i(i);

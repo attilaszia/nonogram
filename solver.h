@@ -32,4 +32,7 @@ private:
   Table table_;
 };
 
+//Check if a file exists at the given path
+bool FileExists(const std::string& filename) noexcept;
+
 #endif  // SOLVER_SOLVER_H_
