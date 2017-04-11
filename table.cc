@@ -1,3 +1,4 @@
+#include <cassert>
 #include "common.h"
 #include "table.h"
 
@@ -199,6 +200,7 @@ bool Table::Init(std::string filename){
   std::ifstream f;
   std::string line;
   f.open(filename.c_str());
+  assert(f.is_open());
   
   int lastindex = filename.find_last_of("."); 
   raw_filename_ = filename.substr(0, lastindex); 
@@ -208,8 +210,14 @@ bool Table::Init(std::string filename){
       
       std::stringstream  linestream(line);
       // Setup width, and height 
+      width_ = -1; //Error value
+      height_ = -1; //Error value
       linestream >> width_;
       linestream >> height_;
+
+      // If file is invalid, these values are random
+      if (height_ < 0) throw std::invalid_argument("File has an invalid format");
+      if (height_ > 1'000'000) throw std::invalid_argument("File has an invalid format");
     }
     // Setup cols 
     for (int i=0; i<width_; i++){
@@ -219,7 +227,10 @@ bool Table::Init(std::string filename){
       int value;
       while ( linestream >> value ) {
         linedata.push_back(value);
+        assert(linedata.size() < 1'000'000);
       }
+      assert(height_ > 0);
+      assert(height_ < 1'000'000'000);
       Line* current_col = new Line(linedata, height_);
       current_col->set_type(kColumn);
       current_col->j(i);
@@ -235,6 +246,8 @@ bool Table::Init(std::string filename){
       while ( linestream >> value ) {
         linedata.push_back(value);
       }
+      assert(width_ > 0);
+      assert(width_ < 1'000'000'000);
       Line* current_row = new Line(linedata, width_);
       current_row->set_type(kRow);
       current_row->i(i);

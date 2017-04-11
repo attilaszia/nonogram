@@ -1,4 +1,5 @@
 #include "solver.h"
+#include <cassert>
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
@@ -7,6 +8,7 @@
 #include <algorithm>
 
 Solver::Solver (std::string filename) {
+  assert(FileExists(filename));
   // Initialize the table, read the data from the textfile
   bool init_ok = table_.Init(filename);
   if (init_ok) {
@@ -32,6 +34,15 @@ Solver::Solver (std::string filename) {
     std::cout << "Unable to initialize table.\n";
   }
 }
+
+bool FileExists(const std::string& filename) noexcept
+{
+  std::fstream f;
+  f.open(filename.c_str(),std::ios::in);
+  return f.is_open();
+}
+
+
 int Solver::RunLogicTilPossible(SolverSpeed algorithm) {
   int count = 0;
   int remaining = table_.NumberOfCells();
@@ -132,14 +143,25 @@ int Solver::SolveAndUpdate (Line* workline, SolverSpeed algorithm) {
 int main(int argc, char* argv[])
 {
   std::cout << "Pic-a-Pix solver 0.1\n";
-  if (argc > 1){
-    std::cout << "Initializing solver with: "  << argv[1] << "\n";	
-    Solver solver(argv[1]);
-  }
-  else {
+  if (argc == 1)
+  {
     std::cout << "Please specify the input file\n";
+    return 1;
   }
-  
-  
+  std::cout << "Initializing solver with: "  << argv[1] << "\n";
+  if (!FileExists(argv[1]))
+  {
+    std::cout << "File '" << argv[1] << "' cannot be found\n";
+    return 1;
+  }
+  try
+  {
+    const Solver solver(argv[1]);
+  }
+  catch (std::exception& e)
+  {
+    std::cout << e.what() << '\n';
+    return 1;
+  }
   return 0;
 }
