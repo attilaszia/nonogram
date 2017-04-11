@@ -16,5 +16,5 @@ script:
   - qmake
   - make
   - ./nonogram examples/sheriff_puzzle.txt
-  # For Issue #1
-  - ./nonogram table.cc
+  # For Issue #1, should give an error
+  - if [ `./nonogram table.cc` -eq 0 ]; then echo "File not detected as incorrect"; return 1; else echo "File correctly identified as incorrect"; fi
