@@ -16,3 +16,5 @@ script:
   - qmake
   - make
   - ./nonogram examples/sheriff_puzzle.txt
+  # For Issue #1
+  - ./nonogram table.cc
