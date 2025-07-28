@@ -28,7 +28,7 @@ for puzzle_file in "$EXAMPLES_DIR"/*.txt; do
     echo "-------------------------------------"
     
     # Execute the solver with the current file as an argument
-    "$SOLVER_EXEC" "$puzzle_file"
+    time "$SOLVER_EXEC" "$puzzle_file"
     
     echo "" # Add a blank line for cleaner output
   fi

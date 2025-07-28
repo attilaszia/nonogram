@@ -142,7 +142,7 @@ int Solver::SolveAndUpdate (Line* workline, SolverSpeed algorithm) {
 
 int main(int argc, char* argv[])
 {
-  std::cout << "Pic-a-Pix solver 0.1\n";
+  std::cout << "Nonogram solver 1.0-rc\n";
   if (argc == 1)
   {
     std::cout << "Please specify the input file\n";
