@@ -27,15 +27,21 @@ void Table::PrintRows() {
 }
 
 void Table::PrintTable() {
+  auto kFill = "⬛";
+  auto kEmpty = "⬜";  
+  if (rows_.size() > 100 || cols_.size() > 100){
+      kFill = "X";
+      kEmpty = " ";
+  }
   for(int i=0; i < rows_.size(); i++) {
     for (int j=0; j < width_; j++) {
       LineState& current_line = rows_[i]->get_state();
       switch (current_line[j]) {
       case kBlack:
-        std::cout << "X";
+        std::cout << kFill;
         break;
       case kWhite:
-        std::cout << " ";
+        std::cout << kEmpty;
         break;
       case kUnknown:
         std::cout << "?";

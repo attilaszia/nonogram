@@ -20,18 +20,20 @@ if [ ! -d "$EXAMPLES_DIR" ]; then
 fi
 
 # Loop through each .txt file in the specified directory
-for puzzle_file in "$EXAMPLES_DIR"/*.txt; do
+time {
+  for puzzle_file in "$EXAMPLES_DIR"/*.txt; do
   # Check if the file exists (handles cases where no .txt files are found)
-  if [ -f "$puzzle_file" ]; then
-    echo "-------------------------------------"
-    echo "Running solver on: $puzzle_file"
-    echo "-------------------------------------"
+    if [ -f "$puzzle_file" ]; then
+      echo "-------------------------------------"
+      echo "Running solver on: $puzzle_file"
+      echo "-------------------------------------"
     
-    # Execute the solver with the current file as an argument
-    time "$SOLVER_EXEC" "$puzzle_file"
+      # Execute the solver with the current file as an argument
+      "$SOLVER_EXEC" "$puzzle_file"
     
-    echo "" # Add a blank line for cleaner output
-  fi
-done
+      echo "" # Add a blank line for cleaner output
+    fi
+  done
+}
 
 echo "All examples have been processed."
