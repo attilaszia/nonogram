@@ -1,33 +1,47 @@
 # Use g++ or clang++
-# GCC seems to generate a faster solver by a small constant factor.
+CXX = g++
 
-CC=g++
+# --- Configuration ---
+# Compiler flags: -O3 for optimization, -fopenmp for OpenMP support.
+# We also add any compiler flags needed by libpng.
+CXXFLAGS   = -O3 -fopenmp $(shell libpng-config --cflags)
 
-all: main
+# Linker flags and libraries
+LDFLAGS    = -fopenmp 
+LDLIBS     = $(shell libpng-config --ldflags --libs)
 
-main: solver.o table.o line.o deduction.o line-solver.o line-solver-dynamic.o line-solver-fast.o
-	$(CC) -O3 -fopenmp solver.o table.o line.o deduction.o line-solver.o line-solver-dynamic.o line-solver-fast.o `libpng-config --ldflags --libs` -o solver
+# --- Project Files ---
+TARGET     = solver
+SRCS       = solver.cc table.cc line.cc deduction.cc line-solver.cc line-solver-dynamic.cc line-solver-fast.cc
+OBJS       = $(SRCS:.cc=.o)
 
-solver.o: solver.cc
-	$(CC) -O3 -fopenmp -c solver.cc
-  
+# --- Build Rules ---
+
+# The default target, which is the first one in the file.
+# .PHONY ensures that 'make all' will run even if a file named 'all' exists.
+.PHONY: all
+all: $(TARGET)
+
+# Rule to link the final executable.
+# It depends on all the object files.
+# $@ is an automatic variable for the target name (solver).
+# $^ is an automatic variable for all the prerequisites (the .o files).
+$(TARGET): $(OBJS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+# Most .cc files will be compiled to .o files using Make's built-in implicit rules.
+# This works because we have defined CXX and CXXFLAGS above.
+
+# A specific rule is only needed for table.o because it has unique flags.
+# -w suppresses all warnings, and -fpermissive downgrades some errors to warnings.
+# $< is an automatic variable for the first prerequisite (table.cc).
 table.o: table.cc
-	$(CC) -O3 -fopenmp -c -w -fpermissive `libpng-config --ldflags --libs` table.cc
-  
-line.o: line.cc
-	$(CC) -O3 -fopenmp -c line.cc
-  
-deduction.o: deduction.cc
-	$(CC) -O3 -fopenmp -c deduction.cc
-  
-line-solver.o: line-solver.cc
-	$(CC) -O3 -fopenmp -c line-solver.cc
-  
-line-solver-dynamic.o: line-solver-dynamic.cc
-	$(CC) -O3 -fopenmp -c line-solver-dynamic.cc
-  
-line-solver-fast.o: line-solver-fast.cc
-	$(CC) -O3 -fopenmp -c line-solver-fast.cc
-	
+	$(CXX) $(CXXFLAGS) -w -fpermissive -c -o $@ $<
+
+# --- Housekeeping ---
+
+# Rule to clean up generated files.
+# .PHONY prevents conflicts with a file named 'clean'.
+.PHONY: clean
 clean:
-	rm *o solver
+	rm -f $(OBJS) $(TARGET)

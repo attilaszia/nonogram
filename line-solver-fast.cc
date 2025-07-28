@@ -3,8 +3,6 @@
 
 bool LineSolverFast::Solve (Line* line, std::vector<int>* result_indices){
   if ( line->is_workline() ) {
-#pragma omp parallel
-{
     // Create a new scanline 
     Line* scanline = new Line(line->get_clues(), line->get_len());    
     // Create a deduction object that can keep track of the search 
@@ -40,7 +38,6 @@ bool LineSolverFast::Solve (Line* line, std::vector<int>* result_indices){
         break;
       }
     }  
-}      
     return true;
   }  
   else {
